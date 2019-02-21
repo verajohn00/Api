@@ -1,7 +1,7 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Restserver\Libraries\REST_Controller;
-defined('BASEPATH') OR exit('No direct script access allowed');
 
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
 /** @noinspection PhpIncludeInspection */
@@ -13,6 +13,9 @@ require APPPATH . 'libraries/Format.php';
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 
 /**
  * Description of contacto
@@ -22,8 +25,28 @@ require APPPATH . 'libraries/Format.php';
 class Api extends REST_Controller {
  
     public function __construct($config = 'rest') {
+               
+        /*header('HTTP/1.1 200 OK');
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Content-Length, Accept-Encoding, Accept");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+        die();
+        }*/        
+
         parent::__construct($config);
         $this->load->model("Producto_model");
+                    
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+
     }
     
     //validar usuarios
@@ -36,6 +59,25 @@ class Api extends REST_Controller {
     //recuperar productos
     public function productos_get(){
         $datos = $this->Producto_model->getProductos();
+        
+        /*header('HTTP/1.1 200 OK');
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Content-Length, Accept-Encoding, Accept");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+        die();
+        }*/        
+
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+        //echo $datos;
         $this->response($datos, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
     }
     
