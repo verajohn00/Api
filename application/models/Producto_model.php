@@ -14,7 +14,7 @@
 class Producto_model extends CI_Model{
     
     public function getProductos(){
-        $this->db->select('*')->from('productos');
+        $this->db->select('*')->from('productos')->where("estatus",1);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0 )
@@ -31,6 +31,15 @@ class Producto_model extends CI_Model{
         
         $this->db->where("id",$id);
         $this->db->update("productos",$data);
+        
+        if($total == 0){
+            $data = array("estatus" => 0);
+
+            $this->db->where("id",$id);
+            $this->db->update("productos",$data);            
+        }
+        
+        
     }
     
     public function getCategorias(){
