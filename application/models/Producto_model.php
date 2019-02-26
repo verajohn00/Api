@@ -26,6 +26,13 @@ class Producto_model extends CI_Model{
         }
     }
     
+    public function updateShop($id,$total){
+        $data = array("cantidad" => $total);
+        
+        $this->db->where("id",$id);
+        $this->db->update("productos",$data);
+    }
+    
     public function getCategorias(){
         $this->db->select('*')->from('categoria');
         $query = $this->db->get();

@@ -37,6 +37,7 @@ class Api extends REST_Controller {
 
         parent::__construct($config);
         $this->load->model("Producto_model");
+        $this->load->model("Login_model");
                     
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -52,8 +53,27 @@ class Api extends REST_Controller {
     //validar usuarios
     public function validate_post(){
         $data = json_decode(file_get_contents("php://input"));
+        $json = json_decode($data->params);
+
+        $correo = $json->updates[0]->value;
+        $pass = $json->updates[1]->value;
+        $res = false;
+        if($this->Login_model->getUser($correo,$pass)){
+            $res = true;
+        }else{
+            $res = false;
+        }
+        
         //$name = $this->input->post("correo");
-        $this->response($data->correo, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+        $this->response($res, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
     }
     
     //recuperar productos
@@ -81,46 +101,32 @@ class Api extends REST_Controller {
         $this->response($datos, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
     }
     
-    //shopNext90?
-    
-    function index(){
-        echo "hola";
-    }
-    
-    public function polizanueva_get(){
-        // create a new user and respond with a status/errors
-        $this->response("hi", REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    }
-    
-    public function index_get()
-    {
-        $users = [
-            ['id' => 1, 'name' => 'Johna', 'email' => 'john@example.com', 'fact' => 'Loves coding'],
-            ['id' => 2, 'name' => 'Jim', 'email' => 'jim@example.com', 'fact' => 'Developed on CodeIgniter'],
-            ['id' => 3, 'name' => 'Jane', 'email' => 'jane@example.com', 'fact' => 'Lives in the USA', ['hobbies' => ['guitar', 'cycling']]],
-        ];
+    //validar usuarios
+    public function finishCart_post(){
+        $data = json_decode(file_get_contents("php://input"));
+        $json = json_decode($data->params);
 
-        $id = $this->get('id');
-        $this->response($users, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-        // respond with information about a user
+        foreach ($json->updates[0]->value as $value) {
+            $id = $value->p->id;
+            $actual = $value->p->cantidad;
+            $pedido = $value->pedido;
+            $total = $actual-$pedido;
+            
+            $this->Producto_model->updateShop($id,$total);
+            //$res = $id;
+        }
+        
+        $res = true;
+        
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+        $this->response($res, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
     }
- 
-    public function crear_put()
-    {
-        //postman => crear and set put on it 
-        // create a new user and respond with a status/errors
-        $this->response("ceando", REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    }
- 
-    function metodo_post()
-    {
-        //postman => metodo and set post on it 
-        // update an existing user and respond with a status/errors
-        $this->response("post", REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
-    }
- 
-    function user_delete()
-    {
-        // delete a user and respond with a status/errors
-    }
+    //shopNext90?    
 }
