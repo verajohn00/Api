@@ -51,6 +51,32 @@ class Api extends REST_Controller {
     }
     
     //validar usuarios
+    public function validateReact_post(){
+        $data = json_decode(file_get_contents("php://input"));
+        $json = $data->correo;
+
+        $correo = $data->correo;
+        $pass = $data->pass;
+        $res = false;
+        if($this->Login_model->getUser($correo,$pass)){
+            $res = true;
+        }else{
+            $res = false;
+        }
+        
+        //$name = $this->input->post("correo");
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+        $this->response($res, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+    }
+    
+    //validar usuarios
     public function validate_post(){
         $data = json_decode(file_get_contents("php://input"));
         $json = json_decode($data->params);
@@ -110,6 +136,34 @@ class Api extends REST_Controller {
             $id = $value->p->id;
             $actual = $value->p->cantidad;
             $pedido = $value->pedido;
+            $total = $actual-$pedido;
+            
+            $this->Producto_model->updateShop($id,$total);
+            //$res = $id;
+        }
+        
+        $res = true;
+        
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Access-Control-Allow-Origin, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            die();
+        }
+        $this->response($res, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+    }
+    
+    //validar usuarios
+    public function finishCartReact_post(){
+        $data = json_decode(file_get_contents("php://input"));
+        $json = json_decode($data->params);
+
+        foreach ($json as $value) {
+            $id = $value->producto->id;
+            $actual = $value->producto->cantidad;
+            $pedido = $value->q;
             $total = $actual-$pedido;
             
             $this->Producto_model->updateShop($id,$total);
